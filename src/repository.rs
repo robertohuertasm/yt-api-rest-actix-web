@@ -1,7 +1,7 @@
 use crate::user::User;
 
 pub trait Repository {
-    fn get_users(&self, user_id: &uuid::Uuid) -> Result<User, String>;
+    fn get_user(&self, user_id: &uuid::Uuid) -> Result<User, String>;
 }
 
 pub struct MemoryRepository {
@@ -17,11 +17,11 @@ impl Default for MemoryRepository {
 }
 
 impl Repository for MemoryRepository {
-    fn get_users(&self, user_id: &uuid::Uuid) -> Result<User, String> {
+    fn get_user(&self, user_id: &uuid::Uuid) -> Result<User, String> {
         self.users
             .iter()
             .find(|u| &u.id == user_id)
-            .map(|u| u.clone())
+            .cloned()
             .ok_or_else(|| "Invalid UUID".to_string())
     }
 }

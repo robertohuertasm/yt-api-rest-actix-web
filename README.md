@@ -18,3 +18,5 @@ Haz click sobre las imágenes para acceder a los mismos.
 
 [![API REST con Actix Web - 02](https://img.youtube.com/vi/rhlOaX8zD1I/0.jpg)](https://www.youtube.com/watch?v=rhlOaX8zD1I)
 
+[![API REST con Actix Web - 03](https://img.youtube.com/vi/xV9t4gFBVZs/0.jpg)](https://www.youtube.com/watch?v=xV9t4gFBVZs)
+
