@@ -19,7 +19,8 @@ async fn main() -> std::io::Result<()> {
     // building shared state
     println!("Starting our server");
     let thread_counter = Arc::new(AtomicU16::new(1));
-    let repo = RepositoryInjector::new_shared(MemoryRepository::default());
+    let repo = RepositoryInjector::new(MemoryRepository::default());
+    let repo = web::Data::new(repo);
     // starting the server
     HttpServer::new(move || {
         let thread_index = thread_counter.fetch_add(1, Ordering::SeqCst);
@@ -27,7 +28,7 @@ async fn main() -> std::io::Result<()> {
         // starting the services
         App::new()
             .data(thread_index)
-            .data(repo.clone())
+            .app_data(repo.clone())
             .route("/", web::get().to(|| HttpResponse::Ok().body("Hola Rust")))
             .service(web::resource("/user/{user_id}").route(web::get().to(get_user)))
             .route(
@@ -50,10 +51,7 @@ async fn main() -> std::io::Result<()> {
     .await
 }
 
-async fn get_user(
-    user_id: web::Path<String>,
-    repo: web::Data<Arc<RepositoryInjector>>,
-) -> HttpResponse {
+async fn get_user(user_id: web::Path<String>, repo: web::Data<RepositoryInjector>) -> HttpResponse {
     if let Ok(parsed_user_id) = Uuid::parse_str(&user_id) {
         match repo.get_user(&parsed_user_id) {
             Ok(user) => HttpResponse::Ok().json(user),

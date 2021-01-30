@@ -12,11 +12,6 @@ Por ejemplo, para el primero de los vídeos, la tag sería `api-rest-actix-01`.
 
 ## Vídeos
 
-Haz click sobre las imágenes para acceder a los mismos.
+Accede a la lista de reproducción de la serie en YouTube haciendo click sobre la imagen.
 
-[![API REST con Actix Web - 01](https://img.youtube.com/vi/m0LuiS9squU/0.jpg)](https://www.youtube.com/watch?v=m0LuiS9squU)
-
-[![API REST con Actix Web - 02](https://img.youtube.com/vi/rhlOaX8zD1I/0.jpg)](https://www.youtube.com/watch?v=rhlOaX8zD1I)
-
-[![API REST con Actix Web - 03](https://img.youtube.com/vi/xV9t4gFBVZs/0.jpg)](https://www.youtube.com/watch?v=xV9t4gFBVZs)
-
+[![API REST con Actix Web](https://img.youtube.com/vi/m0LuiS9squU/0.jpg)](https://www.youtube.com/watch?v=m0LuiS9squU&list=PLojDVPvSO1Di_QEnvDOI5FIeieqYpm1xd)
