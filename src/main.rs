@@ -1,13 +1,14 @@
+mod health;
 mod repository;
 mod user;
+mod v1;
 
-use actix_web::{web, App, HttpResponse, HttpServer};
+use actix_web::{web, App, HttpServer};
 use repository::{MemoryRepository, RepositoryInjector};
 use std::sync::{
     atomic::{AtomicU16, Ordering},
     Arc,
 };
-use uuid::Uuid;
 
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
@@ -29,16 +30,8 @@ async fn main() -> std::io::Result<()> {
         App::new()
             .data(thread_index)
             .app_data(repo.clone())
-            .route("/", web::get().to(|| HttpResponse::Ok().body("Hola Rust")))
-            .service(web::resource("/user/{user_id}").route(web::get().to(get_user)))
-            .route(
-                "/health",
-                web::get().to(|index: web::Data<u16>| {
-                    HttpResponse::Ok()
-                        .header("thread-id", index.to_string())
-                        .finish()
-                }),
-            )
+            .configure(v1::service)
+            .configure(health::service)
     })
     .bind(&address)
     .unwrap_or_else(|err| {
@@ -49,15 +42,4 @@ async fn main() -> std::io::Result<()> {
     })
     .run()
     .await
-}
-
-async fn get_user(user_id: web::Path<String>, repo: web::Data<RepositoryInjector>) -> HttpResponse {
-    if let Ok(parsed_user_id) = Uuid::parse_str(&user_id) {
-        match repo.get_user(&parsed_user_id) {
-            Ok(user) => HttpResponse::Ok().json(user),
-            Err(_) => HttpResponse::NotFound().body("Not found"),
-        }
-    } else {
-        HttpResponse::BadRequest().body("Invalid UUID")
-    }
 }
