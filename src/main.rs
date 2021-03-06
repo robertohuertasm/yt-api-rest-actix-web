@@ -3,7 +3,7 @@ mod repository;
 mod user;
 mod v1;
 
-use actix_web::{web, App, HttpServer};
+use actix_web::{App, HttpServer};
 use repository::{MemoryRepository, RepositoryInjector};
 use std::sync::{
     atomic::{AtomicU16, Ordering},
@@ -21,7 +21,7 @@ async fn main() -> std::io::Result<()> {
     println!("Starting our server");
     let thread_counter = Arc::new(AtomicU16::new(1));
     let repo = RepositoryInjector::new(MemoryRepository::default());
-    let repo = web::Data::new(repo);
+
     // starting the server
     HttpServer::new(move || {
         let thread_index = thread_counter.fetch_add(1, Ordering::SeqCst);

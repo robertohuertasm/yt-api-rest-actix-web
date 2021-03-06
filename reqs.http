@@ -1,0 +1,8 @@
+### health
+GET http://localhost:8080/health HTTP/1.1
+
+### get user
+GET http://localhost:8080/v1/user/356e42a8-e659-406f-98bb-6124414675e9 HTTP/1.1
+
+### get bad user
+GET http://localhost:8080/v1/user/356e42a8-e659-406f-98 HTTP/1.1
