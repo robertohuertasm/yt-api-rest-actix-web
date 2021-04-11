@@ -16,3 +16,4 @@ serde = "1.0.119"
 
 [dev-dependencies]
 actix-rt = "2"
+mockall = "0.9"

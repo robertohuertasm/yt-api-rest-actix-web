@@ -3,8 +3,8 @@ mod repository;
 mod user;
 mod v1;
 
-use actix_web::{App, HttpServer};
-use repository::{MemoryRepository, RepositoryInjector};
+use actix_web::{web, App, HttpServer};
+use repository::MemoryRepository;
 use std::sync::{
     atomic::{AtomicU16, Ordering},
     Arc,
@@ -20,7 +20,7 @@ async fn main() -> std::io::Result<()> {
     // building shared state
     println!("Starting our server");
     let thread_counter = Arc::new(AtomicU16::new(1));
-    let repo = RepositoryInjector::new(MemoryRepository::default());
+    let repo = web::Data::new(MemoryRepository::default());
 
     // starting the server
     HttpServer::new(move || {
@@ -30,7 +30,7 @@ async fn main() -> std::io::Result<()> {
         App::new()
             .data(thread_index)
             .app_data(repo.clone())
-            .configure(v1::service)
+            .configure(v1::service::<MemoryRepository>)
             .configure(health::service)
     })
     .bind(&address)
