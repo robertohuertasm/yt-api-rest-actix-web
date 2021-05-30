@@ -1,8 +1,38 @@
 ### health
 GET http://localhost:8080/health HTTP/1.1
 
+### create user
+POST http://localhost:8080/v1/user/ HTTP/1.1
+Content-Type: application/json
+
+{    
+    "id": "356e42a8-e659-406f-98bb-6124414675e8",
+    "name": "Javier",
+    "birth_date": "1979-07-16",
+    "custom_data": {
+        "random": 4
+    }
+}
+
+### update user
+PUT http://localhost:8080/v1/user/ HTTP/1.1
+Content-Type: application/json
+
+{    
+    "id": "356e42a8-e659-406f-98bb-6124414675e8",
+    "name": "Javier",
+    "birth_date": "1979-07-16",
+    "custom_data": {
+        "random": 53672
+    }
+}
+
 ### get user
-GET http://localhost:8080/v1/user/356e42a8-e659-406f-98bb-6124414675e9 HTTP/1.1
+GET http://localhost:8080/v1/user/356e42a8-e659-406f-98bb-6124414675e8 HTTP/1.1
 
 ### get bad user
 GET http://localhost:8080/v1/user/356e42a8-e659-406f-98 HTTP/1.1
+
+
+### delete user
+DELETE  http://localhost:8080/v1/user/356e42a8-e659-406f-98bb-6124414675e8 HTTP/1.1
