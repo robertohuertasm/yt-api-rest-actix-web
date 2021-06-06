@@ -997,6 +997,7 @@ version = "0.1.0"
 dependencies = [
  "actix-rt 2.0.1",
  "actix-web",
+ "async-trait",
  "chrono",
  "dotenv",
  "futures",
