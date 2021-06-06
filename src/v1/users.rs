@@ -26,28 +26,28 @@ pub fn service<R: Repository>(cfg: &mut ServiceConfig) {
 }
 
 async fn get<R: Repository>(user_id: web::Path<Uuid>, repo: web::Data<R>) -> HttpResponse {
-    match repo.get_user(&user_id) {
+    match repo.get_user(&user_id).await {
         Ok(user) => HttpResponse::Ok().json(user),
         Err(_) => HttpResponse::NotFound().body("Not found"),
     }
 }
 
 async fn post<R: Repository>(user: web::Json<User>, repo: web::Data<R>) -> HttpResponse {
-    match repo.create_user(&user) {
+    match repo.create_user(&user).await {
         Ok(user) => HttpResponse::Created().json(user),
         Err(e) => HttpResponse::InternalServerError().body(format!("Something went wrong: {}", e)),
     }
 }
 
 async fn put<R: Repository>(user: web::Json<User>, repo: web::Data<R>) -> HttpResponse {
-    match repo.update_user(&user) {
+    match repo.update_user(&user).await {
         Ok(user) => HttpResponse::Ok().json(user),
         Err(e) => HttpResponse::NotFound().body(format!("Something went wrong: {}", e)),
     }
 }
 
 async fn delete<R: Repository>(user_id: web::Path<Uuid>, repo: web::Data<R>) -> HttpResponse {
-    match repo.delete_user(&user_id) {
+    match repo.delete_user(&user_id).await {
         Ok(id) => HttpResponse::Ok().body(id.to_string()),
         Err(e) => HttpResponse::InternalServerError().body(format!("Something went wrong: {}", e)),
     }
