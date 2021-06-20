@@ -24,8 +24,9 @@ impl<T> From<PoisonError<T>> for RepositoryError {
     }
 }
 
-type RepositoryResult<T> = Result<T, RepositoryError>;
+pub type RepositoryResult<T> = Result<T, RepositoryError>;
 
+#[cfg_attr(test, mockall::automock)]
 #[async_trait]
 pub trait Repository: Send + Sync + 'static {
     async fn get_user(&self, user_id: &Uuid) -> RepositoryResult<User>;

@@ -62,20 +62,8 @@ mod tests {
 
     use super::*;
     use crate::user::User;
-    use crate::{repository::RepositoryError, user::CustomData};
+    use crate::{repository::MockRepository, user::CustomData};
     use chrono::{NaiveDate, Utc};
-    use mockall::predicate::*;
-    use mockall::*;
-
-    mock! {
-        CustomRepo {}
-        impl Repository for CustomRepo {
-            fn get_user(&self, user_id: &uuid::Uuid) -> Result<User, RepositoryError>;
-            fn create_user(&self, user_id: &User) -> Result<User, RepositoryError>;
-            fn update_user(&self, user: &User) -> Result<User, RepositoryError>;
-            fn delete_user(&self, user_id: &uuid::Uuid) -> Result<uuid::Uuid, RepositoryError>;
-        }
-    }
 
     pub fn create_test_user(id: uuid::Uuid, name: String, birth_date_ymd: (i32, u32, u32)) -> User {
         let (year, month, day) = birth_date_ymd;
@@ -94,7 +82,7 @@ mod tests {
         let user_id = uuid::Uuid::new_v4();
         let user_name = "Mi nombre";
 
-        let mut repo = MockCustomRepo::default();
+        let mut repo = MockRepository::default();
         repo.expect_get_user().returning(move |id| {
             let user = create_test_user(*id, user_name.to_string(), (1977, 03, 10));
             Ok(user)
@@ -122,7 +110,7 @@ mod tests {
         let user_name = "Mi nombre";
         let new_user = create_test_user(user_id, user_name.to_string(), (1977, 03, 10));
 
-        let mut repo = MockCustomRepo::default();
+        let mut repo = MockRepository::default();
         repo.expect_create_user()
             .returning(|user| Ok(user.to_owned()));
 
@@ -148,7 +136,7 @@ mod tests {
         let user_name = "Mi nombre";
         let new_user = create_test_user(user_id, user_name.to_string(), (1977, 03, 10));
 
-        let mut repo = MockCustomRepo::default();
+        let mut repo = MockRepository::default();
         repo.expect_update_user()
             .returning(|user| Ok(user.to_owned()));
 
@@ -172,7 +160,7 @@ mod tests {
     async fn delete_works() {
         let user_id = uuid::Uuid::new_v4();
 
-        let mut repo = MockCustomRepo::default();
+        let mut repo = MockRepository::default();
         repo.expect_delete_user().returning(|id| Ok(id.to_owned()));
 
         let mut result = delete(web::Path::from(user_id), web::Data::new(repo)).await;
