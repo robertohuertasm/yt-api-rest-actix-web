@@ -3,6 +3,7 @@ use actix_web::{
     web::{self, PathConfig},
     HttpRequest, HttpResponse,
 };
+use tracing::instrument;
 use uuid::Uuid;
 use web::ServiceConfig;
 
@@ -25,6 +26,7 @@ pub fn service<R: Repository>(cfg: &mut ServiceConfig) {
     );
 }
 
+#[instrument(skip(repo))]
 async fn get<R: Repository>(user_id: web::Path<Uuid>, repo: web::Data<R>) -> HttpResponse {
     match repo.get_user(&user_id).await {
         Ok(user) => HttpResponse::Ok().json(user),
@@ -32,6 +34,7 @@ async fn get<R: Repository>(user_id: web::Path<Uuid>, repo: web::Data<R>) -> Htt
     }
 }
 
+#[instrument(skip(repo))]
 async fn post<R: Repository>(user: web::Json<User>, repo: web::Data<R>) -> HttpResponse {
     match repo.create_user(&user).await {
         Ok(user) => HttpResponse::Created().json(user),
@@ -39,6 +42,7 @@ async fn post<R: Repository>(user: web::Json<User>, repo: web::Data<R>) -> HttpR
     }
 }
 
+#[instrument(skip(repo))]
 async fn put<R: Repository>(user: web::Json<User>, repo: web::Data<R>) -> HttpResponse {
     match repo.update_user(&user).await {
         Ok(user) => HttpResponse::Ok().json(user),
@@ -46,6 +50,7 @@ async fn put<R: Repository>(user: web::Json<User>, repo: web::Data<R>) -> HttpRe
     }
 }
 
+#[instrument(skip(repo))]
 async fn delete<R: Repository>(user_id: web::Path<Uuid>, repo: web::Data<R>) -> HttpResponse {
     match repo.delete_user(&user_id).await {
         Ok(id) => HttpResponse::Ok().body(id.to_string()),
@@ -53,7 +58,9 @@ async fn delete<R: Repository>(user_id: web::Path<Uuid>, repo: web::Data<R>) -> 
     }
 }
 
+#[instrument(fields( path=?_req.path()), skip(_req))]
 fn path_config_handler(err: PathError, _req: &HttpRequest) -> actix_web::Error {
+    tracing::error!(error=?err, "There was an error with the path");
     actix_web::error::ErrorBadRequest(err)
 }
 

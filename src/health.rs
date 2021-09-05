@@ -2,11 +2,15 @@ use actix_web::{
     web::{self, ServiceConfig},
     HttpResponse,
 };
+use tracing::instrument;
 
+#[instrument(skip(cfg), level = "trace")]
 pub fn service(cfg: &mut ServiceConfig) {
+    tracing::trace!("Init health service");
     cfg.route("/health", web::get().to(health_check));
 }
 
+#[instrument]
 async fn health_check(index: web::Data<u16>) -> HttpResponse {
     HttpResponse::Ok()
         .header("thread-id", index.to_string())
