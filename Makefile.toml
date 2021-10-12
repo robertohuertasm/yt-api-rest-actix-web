@@ -1,0 +1,9 @@
+[tasks.dev]
+install_crate = "cargo-watch"
+command = "cargo"
+args = ["watch", "-x", "run"]
+
+[tasks.dev-r]
+install_crate = "cargo-watch"
+command = "cargo"
+args = ["watch", "-x", "run --release"]
