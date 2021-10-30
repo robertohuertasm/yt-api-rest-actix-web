@@ -18,7 +18,7 @@ async fn main() -> std::io::Result<()> {
     // init tracing subscriber
     let tracing = tracing_subscriber::fmt()
         .with_span_events(FmtSpan::ENTER | FmtSpan::CLOSE)
-        .with_timer(tracing_subscriber::fmt::time::ChronoUtc::rfc3339())
+        .with_timer(tracing_subscriber::fmt::time::UtcTime::rfc_3339())
         .with_env_filter(EnvFilter::from_default_env());
 
     if cfg!(debug_assertions) {
