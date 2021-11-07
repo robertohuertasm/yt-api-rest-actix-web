@@ -3,13 +3,13 @@ mod repository;
 mod user;
 mod v1;
 
+use crate::repository::PostgresRepository;
 use actix_web::{web, App, HttpServer};
-use repository::MemoryRepository;
 use std::sync::{
     atomic::{AtomicU16, Ordering},
     Arc,
 };
-use tracing_subscriber::{fmt::format::FmtSpan, EnvFilter};
+use tracing_subscriber::EnvFilter;
 
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
@@ -17,7 +17,6 @@ async fn main() -> std::io::Result<()> {
     dotenv::dotenv().ok();
     // init tracing subscriber
     let tracing = tracing_subscriber::fmt()
-        .with_span_events(FmtSpan::ENTER | FmtSpan::CLOSE)
         .with_timer(tracing_subscriber::fmt::time::UtcTime::rfc_3339())
         .with_env_filter(EnvFilter::from_default_env());
 
@@ -33,7 +32,10 @@ async fn main() -> std::io::Result<()> {
     // building shared state
     tracing::debug!("Starting our server at {}", address);
     let thread_counter = Arc::new(AtomicU16::new(1));
-    let repo = web::Data::new(MemoryRepository::default());
+    let repo = PostgresRepository::from_env()
+        .await
+        .expect("Repository initialization error");
+    let repo = web::Data::new(repo);
 
     // starting the server
     HttpServer::new(move || {
@@ -41,9 +43,9 @@ async fn main() -> std::io::Result<()> {
         tracing::trace!("Starting thread {}", thread_index);
         // starting the services
         App::new()
-            .data(thread_index)
+            .app_data(web::Data::new(thread_index))
             .app_data(repo.clone())
-            .configure(v1::service::<MemoryRepository>)
+            .configure(v1::service::<PostgresRepository>)
             .configure(health::service)
     })
     .bind(&address)

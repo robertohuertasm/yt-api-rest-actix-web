@@ -7,3 +7,34 @@ args = ["watch", "-x", "run"]
 install_crate = "cargo-watch"
 command = "cargo"
 args = ["watch", "-x", "run --release"]
+
+[tasks.db-start]
+script_runner = "@shell"
+script = '''
+docker run -d --name postgres -p 5432:5432 -e POSTGRES_PASSWORD=postgres -e POSTGRES_USER=postgres -e POSTGRES_DB=mi_api postgres
+'''
+
+[tasks.db-stop]
+script_runner = "@shell"
+script = '''
+docker stop postgres
+docker rm postgres
+'''
+
+[tasks.db-create]
+install_crate = "sqlx-cli"
+command = "sqlx"
+args = ["database", "create"]
+
+[tasks.db-migration-add]
+install_crate = "sqlx-cli"
+command = "sqlx"
+args = ["migrate", "add", "${@}"]
+
+[tasks.db-migration-run]
+install_crate = "sqlx-cli"
+command = "sqlx"
+args = ["migrate", "run"]
+
+[tasks.reset]
+dependencies = ["db-stop", "db-start", "db-migration-run"]

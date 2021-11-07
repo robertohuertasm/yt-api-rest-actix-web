@@ -13,7 +13,7 @@ pub fn service(cfg: &mut ServiceConfig) {
 #[instrument]
 async fn health_check(index: web::Data<u16>) -> HttpResponse {
     HttpResponse::Ok()
-        .header("thread-id", index.to_string())
+        .append_header(("thread-id", index.to_string()))
         .finish()
 }
 

@@ -95,17 +95,13 @@ mod tests {
             Ok(user)
         });
 
-        let mut result = get(web::Path::from(user_id), web::Data::new(repo)).await;
+        let result = get(web::Path::from(user_id), web::Data::new(repo)).await;
 
-        let user = result
-            .take_body()
-            .as_ref()
-            .map(|b| match b {
-                actix_web::dev::Body::Bytes(x) => serde_json::from_slice::<'_, User>(x).ok(),
-                _ => None,
-            })
-            .flatten()
-            .unwrap();
+        let user = match result.body() {
+            actix_web::body::AnyBody::Bytes(x) => serde_json::from_slice::<'_, User>(x).ok(),
+            _ => None,
+        }
+        .unwrap();
 
         assert_eq!(user.id, user_id);
         assert_eq!(user.name, user_name);
@@ -121,17 +117,13 @@ mod tests {
         repo.expect_create_user()
             .returning(|user| Ok(user.to_owned()));
 
-        let mut result = post(web::Json(new_user), web::Data::new(repo)).await;
+        let result = post(web::Json(new_user), web::Data::new(repo)).await;
 
-        let user = result
-            .take_body()
-            .as_ref()
-            .map(|b| match b {
-                actix_web::dev::Body::Bytes(x) => serde_json::from_slice::<'_, User>(x).ok(),
-                _ => None,
-            })
-            .flatten()
-            .unwrap();
+        let user = match result.body() {
+            actix_web::body::AnyBody::Bytes(x) => serde_json::from_slice::<'_, User>(x).ok(),
+            _ => None,
+        }
+        .unwrap();
 
         assert_eq!(user.id, user_id);
         assert_eq!(user.name, user_name);
@@ -147,17 +139,13 @@ mod tests {
         repo.expect_update_user()
             .returning(|user| Ok(user.to_owned()));
 
-        let mut result = put(web::Json(new_user), web::Data::new(repo)).await;
+        let result = put(web::Json(new_user), web::Data::new(repo)).await;
 
-        let user = result
-            .take_body()
-            .as_ref()
-            .map(|b| match b {
-                actix_web::dev::Body::Bytes(x) => serde_json::from_slice::<'_, User>(x).ok(),
-                _ => None,
-            })
-            .flatten()
-            .unwrap();
+        let user = match result.body() {
+            actix_web::body::AnyBody::Bytes(x) => serde_json::from_slice::<'_, User>(x).ok(),
+            _ => None,
+        }
+        .unwrap();
 
         assert_eq!(user.id, user_id);
         assert_eq!(user.name, user_name);
@@ -170,18 +158,13 @@ mod tests {
         let mut repo = MockRepository::default();
         repo.expect_delete_user().returning(|id| Ok(id.to_owned()));
 
-        let mut result = delete(web::Path::from(user_id), web::Data::new(repo)).await;
+        let result = delete(web::Path::from(user_id), web::Data::new(repo)).await;
 
-        let result = result.take_body();
-
-        let id = result
-            .as_ref()
-            .map(|b| match b {
-                actix_web::dev::Body::Bytes(x) => std::str::from_utf8(x).ok(),
-                _ => None,
-            })
-            .flatten()
-            .unwrap();
+        let id = match result.body() {
+            actix_web::body::AnyBody::Bytes(x) => std::str::from_utf8(x).ok(),
+            _ => None,
+        }
+        .unwrap();
 
         assert_eq!(id, user_id.to_string());
     }
