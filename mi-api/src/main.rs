@@ -1,14 +1,6 @@
-mod health;
-mod repository;
-mod user;
-mod v1;
-
-use crate::repository::PostgresRepository;
 use actix_web::{web, App, HttpServer};
-use std::sync::{
-    atomic::{AtomicU16, Ordering},
-    Arc,
-};
+use mi_api::{repository::PostgresRepository, start};
+use std::sync::{atomic::AtomicU16, Arc};
 use tracing_subscriber::EnvFilter;
 
 #[actix_web::main]
@@ -39,14 +31,11 @@ async fn main() -> std::io::Result<()> {
 
     // starting the server
     HttpServer::new(move || {
-        let thread_index = thread_counter.fetch_add(1, Ordering::SeqCst);
-        tracing::trace!("Starting thread {}", thread_index);
-        // starting the services
-        App::new()
-            .app_data(web::Data::new(thread_index))
-            .app_data(repo.clone())
-            .configure(v1::service::<PostgresRepository>)
-            .configure(health::service)
+        let repo = repo.clone();
+        let thread_counter = Arc::clone(&thread_counter);
+        App::new().configure(|cfg| {
+            start(repo, thread_counter, cfg);
+        })
     })
     .bind(&address)
     .unwrap_or_else(|err| {

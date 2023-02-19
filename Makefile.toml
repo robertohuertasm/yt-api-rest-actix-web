@@ -1,20 +1,31 @@
 [tasks.dev]
+workspace = false
 install_crate = "cargo-watch"
 command = "cargo"
 args = ["watch", "-x", "run"]
 
 [tasks.dev-r]
+workspace = false
 install_crate = "cargo-watch"
 command = "cargo"
 args = ["watch", "-x", "run --release"]
 
+[tasks.shuttle]
+workspace = false
+env = { "RUST_LOG"="shuttle=trace,mi_api=trace", "PORT"=8080 }
+install_crate = "cargo-shuttle"
+command = "cargo"
+args = ["shuttle", "run", "--working-directory", "shuttle"]
+
 [tasks.db-start]
+workspace = false
 script_runner = "@shell"
 script = '''
 docker run -d --name postgres -p 5432:5432 -e POSTGRES_PASSWORD=postgres -e POSTGRES_USER=postgres -e POSTGRES_DB=mi_api postgres
 '''
 
 [tasks.db-stop]
+workspace = false
 script_runner = "@shell"
 script = '''
 docker stop postgres
@@ -22,19 +33,23 @@ docker rm postgres
 '''
 
 [tasks.db-create]
+workspace = false
 install_crate = "sqlx-cli"
 command = "sqlx"
 args = ["database", "create"]
 
 [tasks.db-migration-add]
+workspace = false
 install_crate = "sqlx-cli"
 command = "sqlx"
 args = ["migrate", "add", "${@}"]
 
 [tasks.db-migration-run]
+workspace = false
 install_crate = "sqlx-cli"
 command = "sqlx"
 args = ["migrate", "run"]
 
 [tasks.reset]
+workspace = false
 dependencies = ["db-stop", "db-start", "db-migration-run"]

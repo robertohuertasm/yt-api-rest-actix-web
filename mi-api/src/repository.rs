@@ -47,6 +47,10 @@ impl PostgresRepository {
         let pool = sqlx::PgPool::connect(&conn_str).await?;
         Ok(Self { pool })
     }
+
+    pub fn from_pool(pool: sqlx::PgPool) -> Self {
+        Self { pool }
+    }
 }
 
 #[async_trait]

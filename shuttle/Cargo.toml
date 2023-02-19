@@ -1,0 +1,17 @@
+[package]
+name = "shuttle"
+version = "0.1.0"
+edition = "2021"
+publish = false
+
+[lib]
+
+[dependencies]
+shuttle-service = { version = "0.10.0", features = ["web-actix-web"] }
+shuttle-shared-db = { version = "0.10.0", features = ["postgres"] }
+shuttle-secrets = "0.10.0"
+actix-web = "4.3.0"
+sqlx = { version = "0.6", features = ["postgres", "runtime-tokio-native-tls"]}
+mi-api = { path = "../mi-api" }
+tracing = "0.1"
+tracing-subscriber = "0.3"

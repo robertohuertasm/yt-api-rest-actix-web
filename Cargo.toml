@@ -1,26 +1,5 @@
-[package]
-name = "mi-api"
-version = "0.1.0"
-authors = ["Roberto Huertas <roberto.huertas@outlook.com>"]
-edition = "2018"
-
-# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
-
-[dependencies]
-actix-web = "4.0.0-beta.10"
-dotenv = "0.15.0"
-uuid = { version = "0.8", features = ["serde", "v4"] }
-chrono = { version = "0.4", features = ["serde"] }
-serde_json = "1.0"
-serde = "1.0.119"
-thiserror = "1.0"
-futures = "0.3"
-async-trait = "0.1"
-tracing = "0.1"
-tracing-subscriber = { version= "0.3", features = ["env-filter", "json", "time"] }
-tracing-futures = "0.2"
-sqlx = { version = "0.5", features = ["postgres", "runtime-tokio-rustls", "uuid", "chrono"]}
-
-[dev-dependencies]
-actix-rt = "2"
-mockall = "0.10"
+[workspace]
+members = [
+  "mi-api",
+  "shuttle"
+]
