@@ -2,20 +2,20 @@
 workspace = false
 install_crate = "cargo-watch"
 command = "cargo"
-args = ["watch", "-x", "run"]
+args = ["watch", "-x", "run -p mi-api"]
 
 [tasks.dev-r]
 workspace = false
 install_crate = "cargo-watch"
 command = "cargo"
-args = ["watch", "-x", "run --release"]
+args = ["watch", "-x", "run -p mi-api --release"]
 
 [tasks.shuttle]
 workspace = false
 env = { "RUST_LOG"="shuttle=trace,mi_api=trace", "PORT"=8080 }
 install_crate = "cargo-shuttle"
 command = "cargo"
-args = ["shuttle", "run", "--working-directory", "shuttle"]
+args = ["shuttle", "run"]
 
 [tasks.db-start]
 workspace = false
