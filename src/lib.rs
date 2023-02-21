@@ -17,13 +17,25 @@ impl ResourceBuilder<web::Data<PostgresRepository>> for Repository {
         factory: &mut dyn Factory,
         runtime: &Runtime,
     ) -> Result<web::Data<PostgresRepository>, shuttle_service::Error> {
-        let secrets = factory.get_secrets().await?;
-        let pwd = secrets
-            .get("DB_PASSWORD")
-            .ok_or(shuttle_service::Error::Secret(
-                "DB_PASSWORD_NOT_FOUND".to_string(),
-            ))?;
-        let conn_str = format!("postgres://postgres:{pwd}@localhost:5432/rpts");
+        let conn_str = match factory.get_environment() {
+            shuttle_service::Environment::Local => {
+                let secrets = factory.get_secrets().await?;
+                let pwd = secrets
+                    .get("DB_PASSWORD")
+                    .ok_or(shuttle_service::Error::Secret(
+                        "DB_PASSWORD_NOT_FOUND".to_string(),
+                    ))?;
+                format!("postgres://postgres:{pwd}@localhost:5432/rpts")
+            }
+            shuttle_service::Environment::Production => {
+                factory
+                    .get_db_connection_string(shuttle_service::database::Type::Shared(
+                        shuttle_service::database::SharedEngine::Postgres,
+                    ))
+                    .await?
+            }
+        };
+
         let pool = shuttle_shared_db::Postgres::new()
             .local_uri(&conn_str)
             .build(factory, runtime)
